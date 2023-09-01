@@ -65,8 +65,6 @@ fi
 printf "${GREEN}\nSet a password for user $APPUSER:\n${NC}"
 userpass=$(doppler secrets get DOPPSECRET_UNIX_APPUSER_CREDENTIALS --plain | jq -r ".password")
 echo -e "${userpass}\n${userpass}" | passwd $APPUSER
-#root will never need to run doppler anymore. Delete config folder
-rm -rf .doppler/
 printf "${GREEN}\nConfiguring doppler for user $APPUSER\n${NC}"
 appuser_home=$(getent passwd $APPUSER | cut -d: -f6)
 su - $APPUSER -c "echo ${doppler_svc_token} | doppler configure set token --scope ${appuser_home}"
@@ -87,6 +85,9 @@ fi
 
 printf "${GREEN}\nDone. doctl configured\n${NC}"
 sleep $SLEEPTIME
+
+#root will never need to run doppler anymore. Delete config folder
+rm -rf .doppler/
 
 printf "${GREEN}\n\n\nFinished. rebooting in $SLEEPTIME seconds...\n${NC}"
 sleep $SLEEPTIME
