@@ -49,8 +49,9 @@ fi
 printf "${GREEN}\n\n\n*****************************\n"
 printf "cloning and configuring mjolnir\n"
 printf "*****************************\n\n${NC}"
-git_user=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".user")
-git_pat=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".token")
+dopp_git_secret=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain)
+git_user=$(echo ${dopp_git_secret} | jq -r ".user")
+git_pat=$(echo ${dopp_git_secret} | jq -r ".token")
 rm -rf ${MJOLNIR_HOME_ENVVAR_VALUE}
 printf "${GREEN}\n\nCloning repo...${NC}\n"
 git clone https://${git_pat}@github.com/${git_user}/mjolnir.git ${MJOLNIR_HOME_ENVVAR_VALUE}
@@ -111,8 +112,9 @@ sleep $SLEEPTIME
 printf "${GREEN}\n\n\n*****************************\n"
 printf "configuring censys\n"
 printf "*****************************\n\n${NC}"
-censys_id=$(doppler secrets get DOPPSECRET_CENSYS_CREDENTIALS --plain | jq -r ".id")
-censys_apikey=$(doppler secrets get DOPPSECRET_CENSYS_CREDENTIALS --plain | jq -r ".token")
+dopp_censys_secret=$(doppler secrets get DOPPSECRET_CENSYS_CREDENTIALS --plain)
+censys_id=$(echo ${dopp_censys_secret} | jq -r ".id")
+censys_apikey=$(echo ${dopp_censys_secret} | jq -r ".token")
 echo -e "${censys_id}\n${censys_apikey}\nn" | censys config
 printf "${GREEN}\nDone. censys configured.\n${NC}"
 
