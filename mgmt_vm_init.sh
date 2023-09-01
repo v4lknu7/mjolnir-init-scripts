@@ -33,7 +33,7 @@ printf "apt update, dist-upgrade, install locales-all and jq set default locale\
 printf "*****************************\n\n${NC}"
 export DEBIAN_FRONTEND=noninteractive #useful for 100% unattended apt dist-upgrade
 apt update
-apt install locales-all jq
+apt -y install locales-all jq
 apt update && apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade && apt -y autoremove && apt -y clean
 printf "LANG=$DEFAULT_LOCALE\nLC_ALL=$DEFAULT_LOCALE" > /etc/default/locale
 printf "${GREEN}\nDone. packages and distro updated and default locale set to $DEFAULT_LOCALE\n${NC}"
