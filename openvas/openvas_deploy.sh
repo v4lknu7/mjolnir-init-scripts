@@ -91,7 +91,7 @@ mkdir -p /tmp/gvm/gvmd
 chmod -R 777 /tmp/gvm
 openvas_admin_pass=$(doppler secrets get DOPPSECRET_OPENVAS_ADMIN_CREDENTIALS --plain | jq -r ".password")
 openvas_apiuser_name=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".user")
-openvas_admin_pass=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".password")
+openvas_apiuser_pass=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".password")
 
 #usermod command above placed $USER in the docker group but the change is not effective until a logout/login
 #we don't want to logout/login during a script execution, so we're using sudo -u trick to run the docker commands
