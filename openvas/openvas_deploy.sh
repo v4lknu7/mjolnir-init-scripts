@@ -75,8 +75,9 @@ sleep $SLEEPTIME
 printf "${GREEN}\n\n\n*****************************\n"
 printf "cloning mjolnir-openvas\n"
 printf "*****************************\n\n${NC}"
-git_user=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".user")
-git_pat=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".token")
+dopp_git_secret=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain)
+git_user=$(echo ${dopp_git_secret} | jq -r ".user")
+git_pat=$(echo ${dopp_git_secret} | jq -r ".token")
 rm -rf ${OPENVAS_HOME}
 printf "${GREEN}\n\nCloning repo...${NC}\n"
 git clone https://${git_pat}@github.com/${git_user}/mjolnir-openvas.git ${OPENVAS_HOME}
@@ -90,8 +91,9 @@ sudo usermod -aG docker $USER
 mkdir -p /tmp/gvm/gvmd
 chmod -R 777 /tmp/gvm
 openvas_admin_pass=$(doppler secrets get DOPPSECRET_OPENVAS_ADMIN_CREDENTIALS --plain | jq -r ".password")
-openvas_apiuser_name=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".user")
-openvas_apiuser_pass=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".password")
+dopp_openvas_apiuser_secret=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain)
+openvas_apiuser_name=$(echo ${dopp_openvas_apiuser_secret} | jq -r ".user")
+openvas_apiuser_pass=$(echo ${dopp_openvas_apiuser_secret} | jq -r ".password")
 
 #usermod command above placed $USER in the docker group but the change is not effective until a logout/login
 #we don't want to logout/login during a script execution, so we're using sudo -u trick to run the docker commands
