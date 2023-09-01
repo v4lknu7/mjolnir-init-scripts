@@ -64,7 +64,7 @@ else
   if grep "${APPUSER}.*apt" /etc/sudoers; then
     printf "${GREEN}passwordless apt already set${NC}\n"
   else
-    echo "${APPUSER} ALL=(ALL) NOPASSWD: apt install *" | sudo tee -a /etc/sudoers
+    echo "${APPUSER} ALL=(ALL) NOPASSWD: /usr/bin/apt install *" | sudo tee -a /etc/sudoers
     printf "${GREEN}passwordless apt install was set${NC}\n"
 fi
 fi
