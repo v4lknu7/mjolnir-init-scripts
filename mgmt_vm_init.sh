@@ -40,6 +40,18 @@ printf "${GREEN}\nDone. packages and distro updated and default locale set to $D
 sleep $SLEEPTIME
 
 printf "${GREEN}\n\n\n*****************************\n"
+printf "Installing and configuring Doppler client\n"
+printf "*****************************\n\n${NC}"
+apt update && apt install -y apt-transport-https ca-certificates curl gnupg
+curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list
+apt update && apt install doppler
+read -s -p "Doppler service token: " doppler_svc_token
+echo ${doppler_svc_token} | doppler configure set token --scope $(pwd)
+printf "${GREEN}\nDone. Doppler installed and configured\n${NC}"
+sleep $SLEEPTIME
+
+printf "${GREEN}\n\n\n*****************************\n"
 printf "Creating '$APPUSER' user and set their password\n"
 printf "*****************************\n\n${NC}"
 if id "$APPUSER" &>/dev/null; then
@@ -49,7 +61,13 @@ else
   printf "${GREEN}\nDone. User $APPUSER added\n${NC}"
 fi
 printf "${GREEN}\nSet a password for user $APPUSER:\n${NC}"
-passwd $APPUSER
+userpass=$(doppler secrets get DOPPSECRET_UNIX_APPUSER_CREDENTIALS --plain | jq -r ".password")
+echo -e "${userpass}\n${userpass}" | passwd $APPUSER
+#root will never need to run doppler anymore. Delete config folder
+rm -rf .doppler/
+printf "${GREEN}\nConfiguring doppler for user $APPUSER\n${NC}"
+appuser_home=$(getent passwd $APPUSER | cut -d: -f6)
+su - $APPUSER -c "echo ${doppler_svc_token} | doppler configure set token --scope ${appuser_home}"
 sleep $SLEEPTIME
 
 printf "${GREEN}\n\n\n*****************************\n"
