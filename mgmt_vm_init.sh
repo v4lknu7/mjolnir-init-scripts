@@ -61,6 +61,12 @@ if id "$APPUSER" &>/dev/null; then
 else
   useradd -d /home/$APPUSER -m -G sudo -s /bin/bash $APPUSER
   printf "${GREEN}\nDone. User $APPUSER added\n${NC}"
+  if grep "${APPUSER}.*apt" /etc/sudoers; then
+    printf "${GREEN}passwordless apt already set${NC}\n"
+  else
+    echo "${APPUSER} ALL=(ALL) NOPASSWD: apt install *" | sudo tee -a /etc/sudoers
+    printf "${GREEN}passwordless apt install was set${NC}\n"
+fi
 fi
 printf "${GREEN}\nSet a password for user $APPUSER:\n${NC}"
 userpass=$(doppler secrets get DOPPSECRET_UNIX_APPUSER_CREDENTIALS --plain | jq -r ".password")
