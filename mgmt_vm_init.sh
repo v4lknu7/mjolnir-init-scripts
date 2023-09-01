@@ -72,17 +72,15 @@ appuser_home=$(getent passwd $APPUSER | cut -d: -f6)
 su - $APPUSER -c "echo ${doppler_svc_token} | doppler configure set token --scope ${appuser_home}"
 sleep $SLEEPTIME
 
-printf "${GREEN}\n\n\n*****************************\n"
-printf "Install and configure doctl for user '$APPUSER'\n"
-printf "*****************************\n\n${NC}"
-#There is no way to download the 'latest' version. We need to specify the version number to download.
-#Worth checking periodically if there are newer versions available
 if [ ${install_doctl} = true ] ; then
   printf "${GREEN}\n\n\n*****************************\n"
-  printf "installing doctl\n"
+  printf "Install and configure doctl for user '$APPUSER'\n"
   printf "*****************************\n\n${NC}"
+  #There is no way to download the 'latest' version. We need to specify the version number to download.
+  #Worth checking periodically if there are newer versions available
   wget -O /tmp/doctl.tar.gz https://github.com/digitalocean/doctl/releases/download/v1.97.1/doctl-1.97.1-linux-amd64.tar.gz && tar -xvzf /tmp/doctl.tar.gz && sudo mv doctl /usr/bin/doctl && rm /tmp/doctl.tar.gz
-  sudo -u $APPUSER doctl auth init
+  do_token=$(doppler secrets get DOPPSECRET_DIGOCN_APITOKEN --plain)
+  su - $APPUSER -c "doctl auth init -t ${do_token}"
   printf "${GREEN}\nDone. doctl installed\n${NC}"
   sleep $SLEEPTIME
 fi
