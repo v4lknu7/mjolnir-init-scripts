@@ -33,7 +33,7 @@ if [[ "${env}" != "dev" ]] && [[ "${env}" != "prod" ]]; then
   usage
 fi
 
-read -s -p "DigitalOcean API token: " digocn_api_token
+digocn_api_token=$(doppler secrets get DOPPSECRET_DIGOCN_APITOKEN --plain)
 
 AXIOM_PATH="$HOME/.axiom"
 AXIOM_PROVISIONER="default"
@@ -70,7 +70,6 @@ printf "*****************************\n\n${NC}"
 rm -f "${AXIOM_PATH}/axiom.json"
 curl -fsSL https://raw.githubusercontent.com/pry0cc/axiom/master/interact/axiom-configure | bash -s -- --shell bash --unattended --config ${AXIOM_CONFIG}
 #copy profile config to correct folder and meaningful name
-#rm -f ${AXIOM_PATH}/accounts/*
 cp "${AXIOM_PATH}/axiom.json" "${AXIOM_CONFIG_OUTPUT_FILE}"
 printf "${GREEN}\nDone. Account configuration stored in ${AXIOM_CONFIG_OUTPUT_FILE}\n${NC}"
 sleep $SLEEPTIME
