@@ -3,14 +3,12 @@
 PIP_HOME="$HOME/.local/bin"
 SHELL_FILE="$HOME/.bashrc"
 
-OPENVAS_REPO="https://github.com/v4lknu7/mjolnir-openvas.git"
 OPENVAS_HOME="$HOME/openvas"
 OPENVAS_SCRIPTS_FOLDER="$OPENVAS_HOME/scripts"
 OPENVAS_CRON_UPDATE_SCRIPT="$OPENVAS_HOME/cron/update_feeds.sh"
 OPENVAS_DOCKER_COMPOSE_FILE="$OPENVAS_HOME/docker/docker-compose.yml"
 OPENVAS_DOCKER_PROJECT_NAME="greenbone-community-edition"
 OPENVAS_DOCKER_SOCK="/tmp/gvm/gvmd/gvmd.sock"
-OPENVAS_API_USER="pythongvm_user"
 OPENVAS_API_CONFIGFILE="$OPENVAS_SCRIPTS_FOLDER/.pythongvm"
 
 SLEEPTIME=3
@@ -49,7 +47,7 @@ printf "${GREEN}\n\n\n*****************************\n"
 printf "installing dependencies\n"
 printf "*****************************\n\n${NC}"
 sudo apt -y update
-sudo apt -y install jq python3
+sudo apt -y install python3
 #installing Docker using the instructions on https://docs.docker.com/engine/install/debian/
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
   sudo apt -y remove $pkg;
@@ -77,9 +75,11 @@ sleep $SLEEPTIME
 printf "${GREEN}\n\n\n*****************************\n"
 printf "cloning mjolnir-openvas\n"
 printf "*****************************\n\n${NC}"
+git_user=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".user")
+git_pat=$(doppler secrets get DOPPSECRET_GITHUB_CREDENTIALS --plain | jq -r ".token")
 rm -rf ${OPENVAS_HOME}
 printf "${GREEN}\n\nCloning repo...${NC}\n"
-git clone ${OPENVAS_REPO} ${OPENVAS_HOME}
+git clone https://${git_pat}@github.com/${git_user}/mjolnir-openvas.git ${OPENVAS_HOME}
 printf "${GREEN}\n\n\nDone. repo cloned.\n${NC}"
 sleep $SLEEPTIME
 
@@ -89,10 +89,10 @@ printf "*****************************\n\n${NC}"
 sudo usermod -aG docker $USER
 mkdir -p /tmp/gvm/gvmd
 chmod -R 777 /tmp/gvm
-read -s -p "Set OpenVAS admin password: " openvas_admin_pass
-echo
-read -s -p "Set OpenVAS ${OPENVAS_API_USER} password: " openvas_apiuser_pass
-echo
+openvas_admin_pass=$(doppler secrets get DOPPSECRET_OPENVAS_ADMIN_CREDENTIALS --plain | jq -r ".password")
+openvas_apiuser_name=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".user")
+openvas_admin_pass=$(doppler secrets get DOPPSECRET_OPENVAS_APIUSER_CREDENTIALS --plain | jq -r ".password")
+
 #usermod command above placed $USER in the docker group but the change is not effective until a logout/login
 #we don't want to logout/login during a script execution, so we're using sudo -u trick to run the docker commands
 #in a new shell where the user is already on the new group
@@ -109,15 +109,11 @@ openvasdefaultscanconfigname=Full and fast
 openvasdefaultscannername=OpenVAS Default
 openvascvescannername=CVE
 
-[apicreds]
-openvasuser=${OPENVAS_API_USER}
-openvaspass=${openvas_apiuser_pass}
-
 [apisocket]
 openvassocket=${OPENVAS_DOCKER_SOCK}
 EOF
 printf "${GREEN}\nCreating non admin API user.\n${NC}"
-python3 ${OPENVAS_SCRIPTS_FOLDER}/create_user.py -c ${OPENVAS_API_CONFIGFILE} -U admin -P ${openvas_admin_pass} -u ${OPENVAS_API_USER} -p ${openvas_apiuser_pass} -r User
+python3 ${OPENVAS_SCRIPTS_FOLDER}/create_user.py -c ${OPENVAS_API_CONFIGFILE} -U admin -P ${openvas_admin_pass} -u ${openvas_apiuser_name} -p ${openvas_apiuser_pass} -r User
 printf "${GREEN}\nDone. OpenVAS deployed and should be running.\n${NC}"
 sleep $SLEEPTIME
 
