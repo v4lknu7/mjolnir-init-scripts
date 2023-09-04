@@ -2,7 +2,7 @@
 
 ## Init asgaard mgmt droplet
 
-Init VM: (1) unset HISTFILE && bash -c "$(curl -fsSL https://github.com/v4lknu7/mjolnir-init-scripts/raw/main/mgmt_vm_init.sh)" -t DOPPLER_SVC_TOKEN
+Init VM: (1) unset HISTFILE && bash -c "$(curl -fsSL https://github.com/v4lknu7/mjolnir-init-scripts/raw/main/mgmt_vm_init.sh)" mgmt_vm_init.sh -t DOPPLER_SVC_TOKEN
 
 Init axiom (w/ non-root user): (2) read -s -p "Github access token: " gh_token && bash -c "$(curl -fsSL -H "Authorization: token $gh_token" https://raw.githubusercontent.com/v4lknu7/mjolnir/main/init/mjolnir/axiom_deploy.sh)" axiom_deploy.sh -e dev
 
