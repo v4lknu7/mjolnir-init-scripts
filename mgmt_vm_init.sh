@@ -13,7 +13,7 @@ printf "\n\n"
 printf "${GREEN}initiating...\n${NC}"
 sleep $SLEEPTIME
 
-usage() { echo "Usage: $0 [-d (enable if you want to install doctl at init stage)]" 1>&2; exit 0; }
+usage() { echo "Usage: $0 -t <doppler_svc_token> [-d (enable if you want to install doctl at init stage)]" 1>&2; exit 0; }
 
 install_doctl=false
 while getopts "dt:" flags; do
