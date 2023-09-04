@@ -131,26 +131,10 @@ sleep $SLEEPTIME
 printf "${GREEN}\n\n\n*****************************\n"
 printf "installing ssh public key for ansible automation\n"
 printf "*****************************\n\n${NC}"
-key_name="ansible_automation_${env}"
-#if multiple keys are found (improbable) will only take into account the last one
-pub_key_fingerprint=$(doctl compute ssh-key list -o json | jq '.[] | select(.name == "'"${key_name}"'") | .fingerprint' | tr -d '"' | tail -1)
-#if the output above has 48 characters, it should be a fingerprint
-if [[ $(echo ${pub_key_fingerprint} | wc -m) == 48 ]]; then
-  printf "${GREEN}Getting key from DigitalOcean and importing it to authorized_keys...\n${NC}"
-  mkdir -p "$HOME/.ssh"
-  chmod 0700 "$HOME/.ssh"
-  touch "$HOME/.ssh/authorized_keys"
-  chmod 600 "$HOME/.ssh/authorized_keys"
-  doctl_output=$(doctl compute ssh-key get ${pub_key_fingerprint} -o json | jq '.[] | .public_key' | tr -d '"')
-  pub_key=${doctl_output%\\n} # doctl retrieves a literal \n (not even newline) at the end of the key. removing it...
-  if ! grep -q "$pub_key" "$HOME/.ssh/authorized_keys"; then
-    echo $pub_key >> "$HOME/.ssh/authorized_keys"
-  else
-    printf "${GREEN}Key '${key_name}' already on authorized_keys. Skipping.\n${NC}"
-  fi
-else
-  printf "${GREEN}Key '${key_name}' not found. Skipping.\n${NC}"
-fi
+mkdir -p "$HOME/.ssh"
+chmod 0700 "$HOME/.ssh"
+doppler secrets get DOPPSECRET_ANSIBLE_SSHKEY --plain | jq -r ".pub" > "$HOME/.ssh/authorized_keys"
+chmod 0600 "$HOME/.ssh/authorized_keys"
 printf "${GREEN}\nDone. Key installed.\n${NC}"
 
 printf "${GREEN}\n\nWARNING: It's highly recommended to logout/login to make unix group changes effective (user $USER was added to docker group)\n${NC}"
