@@ -13,14 +13,11 @@ printf "\n\n"
 printf "${GREEN}initiating...\n${NC}"
 sleep $SLEEPTIME
 
-usage() { echo "Usage: $0 -t <doppler_svc_token> [-d (enable if you want to install doctl at init stage)]" 1>&2; exit 0; }
+usage() { echo "Usage: $0 -t <doppler_svc_token>" 1>&2; exit 0; }
 
 install_doctl=false
-while getopts "dt:" flags; do
+while getopts "t:" flags; do
   case "${flags}" in
-    d)
-      install_doctl=true
-      ;;
     t)
       doppler_svc_token=${OPTARG}
       ;;
@@ -77,22 +74,6 @@ echo -e "${userpass}\n${userpass}" | passwd $APPUSER
 printf "${GREEN}\nConfiguring doppler for user $APPUSER\n${NC}"
 appuser_home=$(getent passwd $APPUSER | cut -d: -f6)
 su - $APPUSER -c "echo ${doppler_svc_token} | doppler configure set token --scope ${appuser_home}"
-sleep $SLEEPTIME
-
-if [ ${install_doctl} = true ] ; then
-  printf "${GREEN}\n\n\n*****************************\n"
-  printf "Install and configure doctl for user '$APPUSER'\n"
-  printf "*****************************\n\n${NC}"
-  #There is no way to download the 'latest' version. We need to specify the version number to download.
-  #Worth checking periodically if there are newer versions available
-  wget -O /tmp/doctl.tar.gz https://github.com/digitalocean/doctl/releases/download/v1.97.1/doctl-1.97.1-linux-amd64.tar.gz && tar -xvzf /tmp/doctl.tar.gz && sudo mv doctl /usr/bin/doctl && rm /tmp/doctl.tar.gz
-  do_token=$(doppler secrets get DOPPSECRET_DIGOCN_APITOKEN --plain)
-  su - $APPUSER -c "doctl auth init -t ${do_token}"
-  printf "${GREEN}\nDone. doctl installed\n${NC}"
-  sleep $SLEEPTIME
-fi
-
-printf "${GREEN}\nDone. doctl configured\n${NC}"
 sleep $SLEEPTIME
 
 #root will never need to run doppler anymore. Delete config folder
