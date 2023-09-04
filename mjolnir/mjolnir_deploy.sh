@@ -122,8 +122,10 @@ printf "${GREEN}\n\n\n*****************************\n"
 printf "Configuring '$USER' user ssh key for ansible automation\n"
 printf "*****************************\n\n${NC}"
 key_file="$HOME/.ssh/$USER.key"
+mkdir -p "$HOME/.ssh"
+chmod 0700 "$HOME/.ssh"
 doppler secrets get DOPPSECRET_ANSIBLE_SSHKEY --plain | jq -r ".priv" > ${key_file}
-
+chmod 0600 ${key_file}
 printf "${GREEN}\n\n\nDone. key installed.\n${NC}"
 sleep $SLEEPTIME
 
