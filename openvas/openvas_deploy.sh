@@ -137,5 +137,10 @@ doppler secrets get DOPPSECRET_ANSIBLE_SSHKEY --plain | jq -r ".pub" > "$HOME/.s
 chmod 0600 "$HOME/.ssh/authorized_keys"
 printf "${GREEN}\nDone. Key installed.\n${NC}"
 
+printf "${GREEN}\n\n\n*****************************\n"
+printf "Removing passwordless sudo permission\n"
+printf "*****************************\n\n${NC}"
+sudo sed -i "/${USER}.*NOPASSWD/d" /etc/sudoers
+
 printf "${GREEN}\n\nWARNING: It's highly recommended to logout/login to make unix group changes effective (user $USER was added to docker group)\n${NC}"
 sleep $SLEEPTIME
