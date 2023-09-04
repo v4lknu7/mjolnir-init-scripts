@@ -16,10 +16,13 @@ sleep $SLEEPTIME
 usage() { echo "Usage: $0 [-d (enable if you want to install doctl at init stage)]" 1>&2; exit 0; }
 
 install_doctl=false
-while getopts "d" flags; do
+while getopts "dt:" flags; do
   case "${flags}" in
     d)
       install_doctl=true
+      ;;
+    t)
+      doppler_svc_token=${OPTARG}
       ;;
     *)
       usage
@@ -27,6 +30,9 @@ while getopts "d" flags; do
   esac
 done
 shift $((OPTIND-1))
+if [ -z "${doppler_svc_token}" ]; then
+        usage
+fi
 
 printf "${GREEN}\n\n\n*****************************\n"
 printf "apt update, dist-upgrade, install locales-all and jq set default locale\n"
@@ -46,9 +52,6 @@ apt update && apt install -y apt-transport-https ca-certificates curl gnupg
 curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list
 apt update && apt install doppler
-echo
-read -s -p "Doppler service token: " doppler_svc_token
-echo
 echo ${doppler_svc_token} | doppler configure set token --scope $(pwd)
 printf "${GREEN}\nDone. Doppler installed and configured\n${NC}"
 sleep $SLEEPTIME
