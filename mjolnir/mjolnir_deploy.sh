@@ -26,26 +26,6 @@ printf "\n\n"
 printf "${GREEN}initiating...\n${NC}"
 sleep $SLEEPTIME
 
-usage() { echo "Usage: $0 -e <dev|prod>" 1>&2; exit 0; }
-
-while getopts ":e:" flags; do
-  case "${flags}" in
-    e)
-      env=${OPTARG}
-      ;;
-    *)
-      usage
-      ;;
-  esac
-done
-shift $((OPTIND-1))
-if [ -z "${env}" ]; then
-        usage
-fi
-if [[ "${env}" != "dev" ]] && [[ "${env}" != "prod" ]]; then
-  usage
-fi
-
 printf "${GREEN}\n\n\n*****************************\n"
 printf "cloning and configuring mjolnir\n"
 printf "*****************************\n\n${NC}"
