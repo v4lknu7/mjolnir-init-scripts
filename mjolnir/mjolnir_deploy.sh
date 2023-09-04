@@ -119,20 +119,12 @@ echo -e "${censys_id}\n${censys_apikey}\nn" | censys config
 printf "${GREEN}\nDone. censys configured.\n${NC}"
 
 printf "${GREEN}\n\n\n*****************************\n"
-printf "Configuring '$USER' user ssh key for ansible automation, and store public key at DigitalOcean so other servers can read it and copy it to their authorized_keys \n"
+printf "Configuring '$USER' user ssh key for ansible automation\n"
 printf "*****************************\n\n${NC}"
-key_name="ansible_automation_${env}"
 key_file="$HOME/.ssh/$USER.key"
-echo -e "y\n" | ssh-keygen -t ed25519 -C ${key_name} -f "${key_file}" -N ""
-printf "${GREEN}SSH key created. $(ssh-keygen -l -E md5 -f ${key_file})\n\n${NC}"
-for existing_fprint in $(doctl compute ssh-key list -o json | jq '.[] | select(.name == "'"${key_name}"'") | .fingerprint' | tr -d '"'); do
-  printf "${GREEN}\n\nDeleting old key with fingerprint ${existing_fprint}...\n${NC}"
-  doctl compute ssh-key delete ${existing_fprint} -f
-done
-printf "${GREEN}Importing ${key_file}.pub to DigitalOcean...\n${NC}"
-doctl compute ssh-key import ${key_name} --public-key-file "${key_file}.pub"
+doppler secrets get DOPPSECRET_ANSIBLE_SSHKEY --plain | jq -r ".priv" > ${key_file}
 
-printf "${GREEN}\n\n\nDone. key created and stored at DigitalOcean.\n${NC}"
+printf "${GREEN}\n\n\nDone. key installed.\n${NC}"
 sleep $SLEEPTIME
 
 printf "${GREEN}\n\n\n*****************************\n"
