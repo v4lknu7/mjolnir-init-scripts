@@ -135,4 +135,4 @@ sleep $SLEEPTIME
 printf "${GREEN}\n\n\n*****************************\n"
 printf "Removing passwordless sudo permission\n"
 printf "*****************************\n\n${NC}"
-sudo sed -i "/${USER}.*NOPASSWD/d" /etc/sudoers
+sudo sed -i "/${USER}.*NOPASSWD:\sALL/d" /etc/sudoers
