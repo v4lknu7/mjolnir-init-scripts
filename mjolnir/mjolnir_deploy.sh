@@ -3,6 +3,8 @@
 MJOLNIR_HOME_ENVVAR_NAME="MJOLNIR_PATH"
 MJOLNIR_HOME_ENVVAR_VALUE="$HOME/mjolnir"
 
+MJOLNIR_LOG_DIR="/var/log/mjolnir"
+
 PIP_HOME="$HOME/.local/bin"
 
 SHELL_FILE="$HOME/.bashrc"
@@ -44,6 +46,9 @@ else
   echo "export ${MJOLNIR_HOME_ENVVAR_NAME}=${MJOLNIR_HOME_ENVVAR_VALUE}" >> "${SHELL_FILE}"
   printf "${GREEN}${MJOLNIR_HOME_ENVVAR_NAME} was set${NC}\n"
 fi
+printf "${GREEN}\n\nCreating log dir ${MJOLNIR_LOG_DIR}...${NC}\n"
+sudo mkdir -p "${MJOLNIR_LOG_DIR}"
+sudo chown $USER:$USER "${MJOLNIR_LOG_DIR}"
 
 printf "${GREEN}\n\n\nDone. mjolnir configured.\n${NC}"
 sleep $SLEEPTIME
