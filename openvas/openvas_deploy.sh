@@ -113,7 +113,7 @@ printf "installing ssh public key for ansible automation\n"
 printf "*****************************\n\n${NC}"
 mkdir -p "$HOME/.ssh"
 chmod 0700 "$HOME/.ssh"
-doppler secrets get DOPPSECRET_ANSIBLE_SSHKEY --plain | jq -r ".pub" > "$HOME/.ssh/authorized_keys"
+doppler secrets get DOPPSECRET_FABRIC_AUTHKEY --plain | jq -r ".pub" > "$HOME/.ssh/authorized_keys"
 chmod 0600 "$HOME/.ssh/authorized_keys"
 printf "${GREEN}\nDone. Key installed.\n${NC}"
 
