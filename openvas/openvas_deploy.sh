@@ -109,15 +109,6 @@ crontab -l
 sleep $SLEEPTIME
 
 printf "${GREEN}\n\n\n*****************************\n"
-printf "installing ssh public key for ansible automation\n"
-printf "*****************************\n\n${NC}"
-mkdir -p "$HOME/.ssh"
-chmod 0700 "$HOME/.ssh"
-doppler secrets get DOPPSECRET_FABRIC_AUTHKEY --plain | jq -r ".pub" > "$HOME/.ssh/authorized_keys"
-chmod 0600 "$HOME/.ssh/authorized_keys"
-printf "${GREEN}\nDone. Key installed.\n${NC}"
-
-printf "${GREEN}\n\n\n*****************************\n"
 printf "Removing passwordless sudo permission\n"
 printf "*****************************\n\n${NC}"
 sudo sed -i "/${USER}.*NOPASSWD/d" /etc/sudoers
