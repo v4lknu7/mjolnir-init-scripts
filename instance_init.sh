@@ -79,6 +79,16 @@ sleep $SLEEPTIME
 #root will never need to run doppler anymore. Delete config folder
 rm -rf .doppler/
 
+printf "${GREEN}\n\n\n*****************************\n"
+printf "installing ssh public key for fabric automation\n"
+printf "*****************************\n\n${NC}"
+mkdir -p "/home/$APPUSER/.ssh"
+chmod 0700 "/home/$APPUSER/.ssh"
+doppler secrets get DOPPSECRET_FABRIC_AUTHKEY --plain | jq -r ".pub" > "/home/$APPUSER/.ssh/authorized_keys"
+chmod 0600 "/home/$APPUSER/.ssh/authorized_keys"
+chown -R $APPUSER:$APPUSER "/home/$APPUSER/.ssh"
+printf "${GREEN}\nDone. Key installed.\n${NC}"
+
 printf "${GREEN}\n\n\nFinished. rebooting in $SLEEPTIME seconds...\n${NC}"
 sleep $SLEEPTIME
 reboot
