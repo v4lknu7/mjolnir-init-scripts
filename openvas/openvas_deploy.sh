@@ -5,7 +5,6 @@ SHELL_FILE="$HOME/.bashrc"
 
 OPENVAS_HOME="$HOME/openvas"
 OPENVAS_SCRIPTS_FOLDER="$OPENVAS_HOME/scripts"
-OPENVAS_CRON_UPDATE_SCRIPT="$OPENVAS_HOME/cron/update_feeds.sh"
 OPENVAS_DOCKER_COMPOSE_FILE="$OPENVAS_HOME/docker/docker-compose.yml"
 OPENVAS_DOCKER_PROJECT_NAME="greenbone-community-edition"
 OPENVAS_DOCKER_SOCK="/tmp/gvm/gvmd/gvmd.sock"
@@ -97,15 +96,6 @@ EOF
 printf "${GREEN}\nCreating non admin API user.\n${NC}"
 python3 ${OPENVAS_SCRIPTS_FOLDER}/create_user.py -c ${OPENVAS_API_CONFIGFILE} -U admin -P ${openvas_admin_pass} -u ${openvas_apiuser_name} -p ${openvas_apiuser_pass} -r User
 printf "${GREEN}\nDone. OpenVAS deployed and should be running.\n${NC}"
-sleep $SLEEPTIME
-
-printf "${GREEN}\n\n\n*****************************\n"
-printf "adding cron task for daily openvas vulnerability feed updates\n"
-printf "*****************************\n\n${NC}"
-chmod +x ${OPENVAS_CRON_UPDATE_SCRIPT}
-echo "0 4 * * * ${OPENVAS_CRON_UPDATE_SCRIPT}" | crontab -
-printf "${GREEN}\nDone. Crontab installed. Current crontab list below:\n${NC}"
-crontab -l
 sleep $SLEEPTIME
 
 printf "${GREEN}\n\n\n*****************************\n"
